@@ -7,6 +7,8 @@ import userAuthRoute from './routes/userAuthRoute.js';
 import adminAuthRoute from './routes/adminAuthRoute.js';
 import userRoute from './routes/user.js';
 import adminRoute from './routes/admin.js';
+import cron from 'node-cron';
+import { checkAndUpdateOverdue } from './middleware/oveduecheck.js';
 env.config();
 
 const app = express();
@@ -19,10 +21,11 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan('dev'));
-// app.use(fileuploader({ useTempFiles: true }));
+
 
 const port = PORT || 2;
 
+cron.schedule('0 0 * * *', checkAndUpdateOverdue()); 
 
 app.get('/', (req,res) =>{
     res.redirect('/user');
