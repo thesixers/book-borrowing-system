@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign up</title>
+    <link rel="stylesheet" href="/style/user.css">
+    <style>
+        .err{
+            font-size: 13px;
+            text-align: center;
+            color: red;
+        }
+        .input-cont{
+            margin-top: 10px !important;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="left">
+            <div class="logo">Funai library</div>
+        </div>
+    </nav>
+    <div class="loginform-wrapper">
+        <form id="login-form" class="sign">
+            <h3>Sign Up</h3>
+            <div class="err"></div>
+            <div class="input-cont">
+                <input type="email" placeholder="Email" name="email" required>
+                <input type="text" placeholder="RegNo (2020/sc/16105)" name="regno" required>
+                <input type="text" placeholder="Name" name="name" required>
+                <input type="password" placeholder='password' name="password" required>
+                <input type="password" placeholder="Confirm Password" name="cmPass" required>
+                <button>Create</button>
+            </div>
+        </form>
+    </div>
+
+
+    <script>
+        const form = document.querySelector('form');
+
+        form.addEventListener('submit', async function(e){
+            e.preventDefault();
+            let value = checkForm();
+            let email = form.email.value;
+            let regno = form.regno.value;
+            let name = form.name.value;
+            let password = form.password.value;
+            const err = document.querySelector('.err');
+
+            console.log({email, regno, name, password});
+
+            if(value){
+                try{
+
+                    let res = await fetch('/userAuth/signup',{
+                        method: 'POST',
+                        body: JSON.stringify({email, regno, name, password}),
+                        headers: {'Content-Type':'application/json'}
+                    });
+
+                    let data = await res.json();
+
+                    let {M,E} = data;
+
+                    console.log(data);
+
+                    if(E) err.innerHTML =  E;
+
+                    if(M) location.assign('/userAuth/login');
+
+                }
+                catch(err){
+                    console.error('an error occured:' + err);
+                }
+            }
+
+        });
+
+
+        function checkForm(){
+            let email = form.email.value;
+            let regno = form.regno.value;
+            let name = form.name.value;
+            let password = form.password.value;
+            let cmPass = form.cmPass.value;
+            var err = document.querySelector('.err');
+            const names = name.split(' ');
+            var Regex =  /\d{4}\/[a-zA-Z]{2}\/\d+/;
+            var upper = /(?=.*[A-Z])/;
+            var lower = /(?=.*[a-z])/;
+            var num = /(?=.*\d)/;
+
+            if(!Regex.test(regno)){
+                err.innerHTML = 'Invalid RegNo format use this format (2020/sc/16105)!';
+                return false
+            }
+
+
+            if(names.length < 2){
+                err.innerHTML = 'Name musts be atleast two!';
+                return false
+            }
+
+            if(password.length < 6){
+                err.innerHTML = 'Password length must atleast six!';
+                return false
+            }
+
+            if(cmPass !== password){
+                err.innerHTML = 'Both Passwords must match!';
+                return false
+            }
+
+            return true
+        }
+    </script>
+</body>
+</html>

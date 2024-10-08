@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/style/admin.css">
+</head>
+<body>
+    <%- include('./partials/nav.ejs') %>
+    <% let {users, books, borrowReq, borrowlist} = all %>
+
+    <section class="main-wrapper">
+        <h1>manage books</h1>
+        <div class="search"><input type="text" placeholder="Search for Books...."></div>
+        <div class="booktable">
+            <table>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Genre</th>
+                    <th>No of book</th>
+                    <th>Borrowed</th>
+                    <th>ISBN</th>
+                    <th>Action</th>
+                </tr>
+                <tbody>
+                    <% books.forEach(e => { %>
+                        <tr>
+                            <td><%= e.title %></td>
+                            <td><%= e.author %></td>
+                            <td><%= e.genre %></td>
+                            <td><%= e.total_copies %></td>
+                            <td>
+                                <% let diff = e.total_copies - e.copies_available %>
+                                <%= diff %>
+                            </td>
+                            <td><%= e.isbn %></td>
+                            <td><div class="table-btn">
+                                <button>Edit</button><button>Delete</button>
+                            </div></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <%- include('./partials/popups.ejs') %>
+
+    <script src="/script/addbook.js"></script>
+    <script src="/script/addadmin.js"></script>
+    <script src="/script/managepop.js"></script>
+</body>
+</html>

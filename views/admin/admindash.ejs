@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/style/admin.css">
+</head>
+<body>
+    <%- include('./partials/nav.ejs') %>
+    <% let {users, books, borrowReq, borrowlist} = all %>
+    <% let borrowed = borrowlist.map((b, i) => b.status === 'borrowed') %>
+    <section class="main-wrapper">
+        <h1>Overview</h1>
+        <div class="main">
+            <div class="box">
+                <div class="title">Total books</div>
+                <div class="num"><%= books.length %></div>
+            </div>
+            <div class="box">
+                <div class="title">Total Users</div>
+                <div class="num"><%= users.length %></div>
+            </div>
+            <div class="box">
+                <div class="title">Currently borrowed books</div>
+                <div class="num"><%= borrowed.length %></div>
+            </div>
+            <div class="box">
+                <div class="title">Borrow Request</div>
+                <div class="num"><%= borrowReq.length %></div>
+            </div>
+        </div>
+    </section>
+
+    <%- include('./partials/popups.ejs') %>
+
+    <script src="/script/addbook.js"></script>
+    <script src="/script/addadmin.js"></script>
+    <script src="/script/dashpop.js"></script>  
+</body>
+</html>

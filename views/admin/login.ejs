@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/style/admin.css">
+    <style>
+        .err{
+            font-size: 13px;
+            text-align: center;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="left">
+            <div class="logo">Funai library</div>
+        </div>
+    </nav>
+    <div class="loginform-wrapper">
+        <form id="login-form">
+            <h3>Login</h3>
+            <div class="err"></div>
+            <div class="input-cont">
+                <input type="email" name="email" placeholder="Email">
+                <input type="password" name="password" placeholder='password'>
+                <button>Login</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const form = document.querySelector('form');
+        const err = document.querySelector('.err');
+
+        form.addEventListener('submit', async function(e){
+            e.preventDefault();
+            let email = form.email.value;
+            let password = form.password.value;
+
+            try {
+                let res = await fetch('/adminAuth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({email,password}),
+                    headers: {'Content-Type': 'application/json'}
+                });
+
+                let data = await res.json();
+                let {M,E} = data;
+                if(M) location.assign('/admin');
+                let errMessage = E.user || E.password;
+                if(E) err.innerHTML = errMessage;
+
+            } catch (err) {
+                console.error(err);
+            }
+
+        });
+    </script>
+</body>
+</html>

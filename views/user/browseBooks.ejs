@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/style/user.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+    <%- include('./partials/nav.ejs') %>
+    <% let {user, borrowReq, borrowlist, books} = all %>
+
+    <section class="main">
+        <div class="searchandfilter-wrapper">
+            <input type="text" name="" id="" placeholder="Search for Books.....">
+            <div class="filter-wrapper">
+                <div class="filter-btn">Filter <span class="material-symbols-outlined drop-icon">
+                    arrow_drop_down
+                    </span>
+                </div>
+                <div class="filter-list">
+                    <div>Maths</div>
+                    <div>Physics</div>
+                    <div>Computer</div>
+                    <div>Biology</div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <h2>List of Books<small></small></h2>
+            <ul class="responsive-table">
+              <li class="table-header">
+                <div class="col col-1">ISBN</div>
+                <div class="col col-2">Book Name</div>
+                <div class="col col-3">Late Fees</div>
+                <div class="col col-4">Available Copies</div>
+                <div class="col col-4">Total Copies</div>
+                <div class="col col-4">Genre</div>
+                <div class="col col-4">published_year</div>
+              </li>
+              
+              <% books.forEach(e => {%>
+                <li class="table-row">
+                <div class="col col-1" data-label="ISBN:"><%= e.isbn %></div>
+                <div class="col col-2" data-label="Book Name:"><%= e.title %></div>
+                <div class="col col-2" data-label="Book Author:"><%= e.author %></div>
+                <div class="col col-3" data-label="Late Fees:"><%= e.fine %></div>
+                <div class="col col-4" data-label="Available Copies"><%= e.copies_available %></div>
+                <div class="col col-4" data-label="Total Copies:"><%= e.total_copies %></div>
+                <div class="col col-4" data-label="Genre:"><%= e.genre %></div>
+                <div class="col col-4" data-label="Send Borrow Request:"><Button class="rq-btn" onclick="request('<%= user.regno %>', '<%= e.isbn %>')">Request</Button></div>
+              </li>
+              <%  }); %>
+            </ul>
+          </div>
+    </section>
+
+    <div class="messsage-box-wrapper">
+        <div class="message-box">
+            <div class="close-message">&times;</div>
+            <div class="title mess-title"> Success!! <span class="err-icon mess-icon">i</span></div>
+            <div class="message mess-mess">Borrow request Status Updated</div>
+        </div>
+    </div>
+
+
+    <script>
+        var menuBtn = document.querySelector('.menu-btn');
+        var list = document.querySelector('.list');
+        var filterBtn =document.querySelector('.filter-btn');
+        var filterList = document.querySelector('.filter-list');
+        let messsageWrapper = document.querySelector('.messsage-box-wrapper');
+        let messTitle = document.querySelector('.mess-title');
+        let messMess = document.querySelector('.mess-mess');
+        let messIcon = document.querySelector('.mess-icon');
+        let contT = document.querySelector('.cont-t');
+
+        document.querySelector('.close-message').addEventListener('click', function(){
+            messsageWrapper.style.display = 'none';
+        })
+
+        menuBtn.addEventListener('click', function(){
+            if(list.style.display === 'none'){
+                list.style.display = 'block';
+                document.querySelector('.searchandfilter-wrapper').style.zIndex = '-1';
+            }else{
+                list.style.display = 'none';
+                document.querySelector('.searchandfilter-wrapper').style.zIndex = '1';
+            }
+        });
+
+        filterBtn.addEventListener('click', function(){
+            filterList.style.display = filterList.style.display === 'none' ? 'block' : 'none';
+        });
+
+        function formatDate(date) {
+            let year = date.getFullYear();
+            let month = String(date.getMonth() + 1).padStart(2, '0');
+            let day = String(date.getDate()).padStart(2, '0'); 
+            return `${year}/${month}/${day}`;
+        }
+
+        async function request(userRegno, bookIsbn) {
+            let currentDate = new Date();
+            let request_date = formatDate(currentDate);
+
+            try {
+                let res = await fetch('/user/request', {
+                    method: 'POST',
+                    body: JSON.stringify({userRegno,request_date,bookIsbn}),
+                    headers: {'Content-Type': 'application/json'}
+                });
+
+                let data = await res.json();
+                let  {E,M} = data;
+                console.log(data);
+                if(M){
+                    messsageWrapper.style.display = 'flex';
+                    messTitle.innerHTML = 'Success';
+                    messMess.innerHTML = 'request made';
+                }
+                if(E){
+                    messsageWrapper.style.display = 'flex';
+                    messTitle.innerHTML = 'info';
+                    messMess.innerHTML = 'u have a pending request for this book';
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        }
+    </script>
+</body>
+</html>

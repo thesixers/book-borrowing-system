@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/style/admin.css">
+</head>
+<body>
+    <%- include('./partials/nav.ejs') %>
+    <% let {users, books, borrowReq, borrowlist} = all %>
+
+    <section class="main-wrapper">
+        <h1>Manage Users</h1>
+        <div class="search"><input type="text" placeholder="Search for Users...." class="book-search"></div>
+        <div class="booktable">
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>email</th>
+                    <th>Total Borrowed Books</th>
+                    <th>Return Rate</th>
+                    <th>Fine</th>
+                    <th>Action</th>
+                </tr>
+                <div class="cont-u">
+                    <% users.forEach(e => { %>
+                        <tr>
+                        <td> <%= e.name %> </td>
+                        <td><%= e.email %></td>
+                        <td>
+                            <% let my = borrowlist.map(b => b.userRegno === e.userRegno); %>
+                            <%= my.length %>
+                        </td>
+                        <td>
+                            <% let returns = borrowlist.map(b => b.userRegno === e.userRegno && b.status === 'returned') %>
+                            <% let p = Number((returns.length / my.length)) %>
+                            <%= `${p}%` %>
+                        </td>
+                        <td>#<%= e.fineowed %></td>
+                        <td><div class="table-btn">
+                            <button class="detail-btn" onclick="displayUser({ name: '<%= e.name %>', regno: '<%= e.regno %>', email: '<%= e.email %>', borrowed: '<%= my.length %>' })">Details</button>
+                        </div></td>
+                    </tr>
+                   <% }); %>
+                </div>
+            </table>
+        </div>
+    </section>
+
+    <div class="user-details-wrapper">
+        <div class="user-details">
+            <div class="closeuser">&times;</div>
+            <div class="userimg"></div>
+            <div class="details"></div>
+        </div>
+    </div>
+
+    <%- include('./partials/popups.ejs') %> 
+
+
+    <script src="/script/addbook.js"></script>
+    <script src="/script/addadmin.js"></script>
+    <script>
+        var menuBtn = document.querySelector('.menu-btn');
+        var list = document.querySelector('.list');
+        var createAdminWrapper = document.querySelector('.create-admin-wrapper');
+        var closes = document.querySelector('.close');
+        var popAdmin = document.querySelector('.pop-admin');
+        var bookFormWrapper = document.querySelector('.book-form-wrapper');
+        var closeBookForm = document.querySelector('.close-book-form');
+        var addBook = document.querySelector('.add-book');
+        var userDetailsWrapper = document.querySelector('.user-details-wrapper');
+        var closeUser = document.querySelector('.closeuser'); 
+        var detailBtn = document.querySelector('.detail-btn');
+        let userDetails = document.querySelector('.user-details');
+        var userImag = document.querySelector('.userimg');
+        var details = document.querySelector('.details');
+        let bookSearch = document.querySelector('.book-search');
+        let contU = document.querySelector('.cont-u');
+
+
+
+        // bookSearch.addEventListener('keydown', async function(e){
+        //     let it = bookSearch.value;
+        //     let value = it.toLowerCase()
+
+        //     try {
+        //         let res = await fetch('/admin/search-users',{
+        //             method: 'POST',
+        //             body: JSON.stringify({value}),
+        //             headers: {'Content-Type': 'application/json'}
+        //         });
+
+        //         let data = await res.json();
+        //         console.log(data);
+        //         if(data){
+        //             let {users,borrowlist} = data;
+
+        //             let search =  users.map(e => e.name.toLowerCase().includes(value) || e.email.toLowerCase().includes(value) || e.regno.toLowerCase().includes(value));
+
+        //             if(it === '') {
+        //                 let my = borrowlist.map(b => b.userRegno === e.userRegno);
+                        
+        //                 users.forEach(e => {
+        //                     let returns = borrowlist.map(b => b.userRegno === e.userRegno && b.status === 'returned')
+        //                     let p = Number((returns.length / my.length));
+        //                     contU.innerHTML = `<tr>
+        //                         <td> ${e.name}</td>
+        //                         <td>${e.email}</td>
+        //                         <td>
+        //                             ${my.length}
+        //                         </td>
+        //                         <td>
+        //                             ${p}%
+        //                         </td>
+        //                         <td>#${e.fineowed}</td>
+        //                         <td><div class="table-btn">
+        //                             <button class="detail-btn" onclick="displayUser({ name: ${e.name}, regno: ${e.regno}, email: ${e.email}, borrowed: ${my.length} })">Details</button>
+        //                         </div></td>
+        //                         </tr>`
+        //                 });
+        //             }else{
+        //                 search.forEach(e => {
+        //                     let returns = borrowlist.map(b => b.userRegno === e.userRegno && b.status === 'returned')
+        //                     let p = Number((returns.length / my.length));
+        //                     contU.innerHTML = `<tr>
+        //                         <td> ${e.name}</td>
+        //                         <td>${e.email}</td>
+        //                         <td>
+        //                             ${my.length}
+        //                         </td>
+        //                         <td>
+        //                             ${p}%
+        //                         </td>
+        //                         <td>#${e.fineowed}</td>
+        //                         <td><div class="table-btn">
+        //                             <button class="detail-btn" onclick="displayUser({ name: ${e.name}, regno: ${e.regno}, email: ${e.email}, borrowed: ${my.length} })">Details</button>
+        //                         </div></td>
+        //                         </tr>`
+        //                 });
+        //             }
+
+
+                    
+
+        //         }
+        //     } catch (err) {
+        //         console.log(err);
+        //     }
+
+        // })
+
+        closeUser.addEventListener('click', function(){
+            userDetailsWrapper.style.display = 'none';
+        });
+
+        function displayUser(userInfo){
+            let { name, regno, email, borrowed } = userInfo
+            userDetailsWrapper.style.display = 'flex';
+            let A = name.split(' ')[0].split('')[0];
+            let B = name.split(' ')[1].split('')[0];
+            
+            userImag.innerHTML = `${A}${B}`;
+            
+           details.innerHTML = `
+                <div class="name"><span class="title">Name:</span> ${name}</div>
+                <div class="regno"><span class="title">RegNo:</span> ${regno}</div>
+                <div class="department"><span class="title">Department:</span> Computer Science</div>
+                <div class="email"><span class="title">Email:</span> ${email}</div>
+                <div class="books-borrowed"><span class="title">Books Borrowed:</span> ${borrowed}</div>
+                <div class="btn"><Button>Block</Button> <Button>Delete Account</Button></div>
+                `;
+        }
+
+        menuBtn.addEventListener('click', function(){
+            (list.style.display === 'none') ? list.style.display = 'block' : list.style.display = 'none';
+        });
+
+        popAdmin.addEventListener('click', function(){
+            createAdminWrapper.style.display = 'flex';
+            list.style.display = 'none';
+        });
+
+        closes.addEventListener('click', function(){
+            createAdminWrapper.style.display = 'none';
+        });
+
+        closeBookForm.addEventListener('click', function(){
+            bookFormWrapper.style.display = 'none';
+        });
+
+        addBook.addEventListener('click', function(){
+            bookFormWrapper.style.display = 'flex';
+            list.style.display = 'none';
+        });
+
+
+
+    </script>
+</body>
+</html>

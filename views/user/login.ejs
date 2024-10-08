@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/style/user.css">
+    <style>
+        .err{
+            font-size: 13px;
+            text-align: center;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="left">
+            <div class="logo">Funai library</div>
+        </div>
+    </nav>
+    <div class="loginform-wrapper">
+        <form id="login-form">
+            <h3>Login</h3>
+            <div class="err"></div>
+            <div class="input-cont">
+                <input type="text" placeholder="Email or RegNo" name="user" required>
+                <input type="password" placeholder='password' name="password" required>
+                <button>Login</button>
+            </div>
+        </form>
+    </div>
+
+
+
+
+
+
+
+    <script>
+        const form = document.querySelector('form');
+
+        form.addEventListener('submit', async function(e){
+            e.preventDefault();
+            let testValue = regexTest();
+
+            if(testValue) login();
+
+        });
+
+
+        function regexTest(){
+            var Regex =  /\d{4}\/[a-zA-Z]{2}\/\d+/;
+            var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            const user = form.user.value;
+            const password = form.password.value;
+            const err = document.querySelector('.err');
+
+            if(!Regex.test(user)){
+                if(!emailRegex.test(user)){
+                    err.innerHTML = 'Incorrect email or regno';
+                    return false
+                }
+            }
+
+            return true
+        }
+
+       async function login(){
+            const user = form.user.value;
+            const password = form.password.value;
+
+            try{
+                let res = await fetch('/userAuth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({user, password}),
+                    headers: {'Content-Type': 'application/json'}
+                });
+
+                let data = await res.json();
+                
+                console.log(data);
+
+                let {M, E} = data;
+
+                if(M) location.assign('/user')
+
+            }
+            catch(err){
+                console.error(err);
+            }
+       }
+    </script>
+</body>
+</html>

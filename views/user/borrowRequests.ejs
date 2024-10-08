@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/style/user.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+    <%- include('./partials/nav.ejs') %>
+    <% let {user,borrowReq, borrowlist, books} = all %>
+
+    <section class="main">
+        <div class="searchandfilter-wrapper">
+            <input type="text" name="" id="" placeholder="Search Borrow Requests.....">
+            <div class="filter-wrapper">
+                <div class="filter-btn">Filter <span class="material-symbols-outlined drop-icon">
+                    arrow_drop_down
+                    </span>
+                </div>
+                <div class="filter-list">
+                    <div>Pending</div>
+                    <div>Approved</div>
+                    <div>Rejected</div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <h2>Borrow Request<small></small></h2>
+            <ul class="responsive-table">
+              <li class="table-header">
+                <div class="col col-1">ISBN</div>
+                <div class="col col-2">Book Name</div>
+                <div class="col col-3">Student RegNo</div>
+                <div class="col col-4">Borrow Date</div>
+                <div class="col col-4">Due Date</div>
+                <div class="col col-4">Return Date</div>
+                <div class="col col-4">Status</div>
+              </li>
+              
+              <% borrowReq.forEach(e => { %>
+                <li class="table-row">
+                    <div class="col col-1" data-label="ISBN:"><%= e.bookIsbn %></div>
+                    <div class="col col-2" data-label="Book Name:">
+                        <% let bookA = books.filter(b => b.isbn === e.bookIsbn) %>
+                        <% let book = bookA[0] %>
+                        <%= book.title %>
+                    </div>
+                    <div class="col col-3" data-label="Student RegNo:"><%= e.userRegno %></div>
+                    <div class="col col-4" data-label="Request Date:"><%= e.request_date %></div>
+                    <div class="col col-4" data-label="Decision Date:"><%= e.decision_date %></div>
+                    <div class="col col-4" data-label="Status:"><%= e.status %></div>
+                  </li>
+             <% }); %>
+          </div>
+    </section>
+
+
+    <script>
+        var menuBtn = document.querySelector('.menu-btn');
+        var list = document.querySelector('.list');
+        var filterBtn =document.querySelector('.filter-btn');
+        var filterList = document.querySelector('.filter-list');
+
+        menuBtn.addEventListener('click', function(){
+            if(list.style.display === 'none'){
+                list.style.display = 'block';
+                document.querySelector('.searchandfilter-wrapper').style.zIndex = '-1';
+            }else{
+                list.style.display = 'none';
+                document.querySelector('.searchandfilter-wrapper').style.zIndex = '1';
+            }
+        });
+
+        filterBtn.addEventListener('click', function(){
+            filterList.style.display = filterList.style.display === 'none' ? 'block' : 'none';
+        })
+    </script>
+</body>
+</html>

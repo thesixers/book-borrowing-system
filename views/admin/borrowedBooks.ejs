@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/style/admin.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        .due-date-wrapper{
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(220, 20, 60, 0.151);
+            /* mix-blend-mode: screen; */
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .due-date-wrapper form{
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 10px;
+            background-color: crimson;
+            padding: 10px;
+            width: 300px;
+            height: 300px;
+            border-radius: 20px;
+
+            .title{
+                color: #fff;
+            }
+        }
+        .due-date-wrapper form input{
+            width: 200px;
+            padding: 10px;
+        }
+        .due-date-wrapper form button{
+            padding: 10px 5px;
+            border: 1px solid #fff;
+            width: 150px;
+            border: none;
+            background-color: #fff;
+            cursor: pointer;
+            transition: 0.4s ease-in-out;
+
+            &:hover{
+                border-radius: 20px;
+                box-shadow: 0px 1px 5px 1px #fff;
+            }
+        }
+        
+        .due-date-wrapper form .cancle{
+            padding: 5px;
+            width: 100px;
+            border: none;
+            background-color: #fff;
+            text-align: center;
+            cursor: pointer;
+        }
+        .closeBD{
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 25px;
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <%- include('./partials/nav.ejs') %>
+    <% let {users, books, borrowReq, borrowlist} = all %>
+
+    <% function getMonthName(monthNumber) {
+        let monthName;
+        
+        switch (monthNumber) {
+            case 1:
+                monthName = "Jan";
+                break;
+            case 2:
+                monthName = "Feb";
+                break;
+            case 3:
+                monthName = "March";
+                break;
+            case 4:
+                monthName = "Apr";
+                break;
+            case 5:
+                monthName = "May";
+                break;
+            case 6:
+                monthName = "June";
+                break;
+            case 7:
+                monthName = "July";
+                break;
+            case 8:
+                monthName = "Aug";
+                break;
+            case 9:
+                monthName = "Sept";
+                break;
+            case 10:
+                monthName = "Oct";
+                break;
+            case 11:
+                monthName = "Nov";
+                break;
+            case 12:
+                monthName = "Dec";
+                break;
+            default:
+                monthName = "Invalid month number";
+        }
+    
+        return monthName;
+    }
+     %>
+
+    <section class="main-wrapper">
+        <h1>Manage Users</h1>
+        <div class="search"><input type="text" placeholder="Search borrowed list by RegNo or ISBN....">
+        <div class="filter">
+           <div class="f">Filter <span class="material-symbols-outlined">
+            arrow_drop_down
+            </span></div>
+           <div class="filter-all">
+            <div>not Collected</div>
+           <div>Collected</div>
+           </div>
+        </div></div>
+        <div class="booktable"> 
+            <table>
+                <tr>
+                    <th>Student RegNo</th>
+                    <th>Book ISBN</th>
+                    <th>Borrow Date</th>
+                    <th>Due date</th>
+                    <th>Return date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                <tbody>
+                    <% borrowlist.forEach(e => { %>
+                        <tr>
+                            <td><%= e.userRegno %></td>
+                            <td><%= e.bookIsbn %></td>
+                            <td>
+                            <% if(e.borrow_date) {%>
+                                    <% let month = Number(e.borrow_date.split('/')[1]);
+                                    let year = e.borrow_date.split('/')[0];
+                                    let day = e.borrow_date.split('/')[2];
+                                    let monthName = getMonthName(month)
+
+                                    let stringDate = `${day} of ${monthName} ${year}`
+                                    %>
+                                    <%= stringDate %>
+                            <% } %>
+                            </td>
+                            <td>
+                                <% if(e.due_date) {%>
+                                    <% let month = Number(e.due_date.split('/')[1]);
+                                    let year = e.due_date.split('/')[0];
+                                    let day = e.due_date.split('/')[2];
+                                    let monthName = getMonthName(month)
+
+                                    let stringDate = `${day} of ${monthName} ${year}`
+                                    %>
+                                    <%= stringDate %>
+                                <% } %>
+                            </td>
+                            <td>
+                                <% if(e.return_date) {%>
+                                    <% let month = Number(e.return_date.split('/')[1]);
+                                    let year = e.return_date.split('/')[0];
+                                    let day = e.return_date.split('/')[2];
+                                    let monthName = getMonthName(month)
+
+                                    let stringDate = `${day} of ${monthName} ${year}`
+                                    %>
+                                    <%= stringDate %>
+                                <% } %>
+                            </td>
+                            <td><%= e.status %></td>
+                            <td><div class="table-btn">
+                                <% if(e.status === 'not borrowed'){ %>
+                                    <button class="detail-btn" onclick="openSendBox('<%= e.id %>')">Borrow</button>
+                               <% } %>
+
+                               <% if(e.status === 'borrowed'){ %>
+                                <button class="detail-btn" onclick="returned('<%= e.id %>')">return</button>
+                               <% } %>
+
+                               <% if(e.status === 'returned'){ %>
+                                <button class="detail-btn" onclick="">No Action</button>
+                               <% } %>
+
+                               <% if(e.status === 'overdue'){ %>
+                                <button class="detail-btn" onclick="">No Action</button>
+                               <% } %>
+
+                            </div></td>
+                        </tr>
+                   <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <div class="due-date-wrapper">
+        <form id="due-form">
+            <div class="closeBD" onclick="cancle()">&times;</div>
+            <div class="title">Borrow Id</div>
+            <input type="text" name="id" readonly>
+            <div class="title">Return Date</div>
+            <input type="date" name="duedate" required>
+            <button>Submit</button>
+        </form>
+    </div>
+
+    <div class="reason-wrapper">
+        <div class="reason">
+            <div class="title">Reason for Decline</div>
+            <div class="close-reason" onclick="closepopReason('close')">&times;</div>
+            <textarea name="reason" id=""></textarea>
+            <button>Send</button> 
+        </div>
+    </div>
+
+    <div class="user-details-wrapper">
+        <div class="user-details">
+            <div class="closeuser">&times;</div>
+            <div class="userimg">NA</div>
+            <div class="details">
+                <div class="name"><span class="title">Name:</span> Nnamdi Amaga Joe</div>
+                <div class="regno"><span class="title">RegNo:</span> 2020/sc/16105</div>
+                <div class="department"><span class="title">Department:</span> Computer Science</div>
+                <div class="email"><span class="title">Email:</span> nnamdiamaga2@gmail.com</div>
+                <div class="books-borrowed"><span class="title">Books Borrowed:</span> 7</div>
+                <div class="btn"><Button>Block</Button> <Button>Delete Account</Button></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="messsage-box-wrapper">
+        <div class="message-box">
+            <div class="close-message">&times;</div>
+            <div class="title"> Success!! <span class="err-icon">i</span></div>
+            <div class="message">Borrow request Status Updated</div>
+        </div>
+    </div>
+    <%- include('./partials/popups.ejs') %>
+
+
+    <script src="/script/addbook.js"></script>
+    <script src="/script/addadmin.js"></script>
+    <script>
+        var menuBtn = document.querySelector('.menu-btn');
+        var list = document.querySelector('.list');
+        var createAdminWrapper = document.querySelector('.create-admin-wrapper');
+        var closes = document.querySelector('.close');
+        var popAdmin = document.querySelector('.pop-admin');
+        var bookFormWrapper = document.querySelector('.book-form-wrapper');
+        var closeBookForm = document.querySelector('.close-book-form');
+        var addBook = document.querySelector('.add-book');
+        var userDetailsWrapper = document.querySelector('.user-details-wrapper');
+        var closeUser = document.querySelector('.closeuser'); 
+        var detailBtn = document.querySelector('.detail-btn');
+        // borrow request 
+        var filterAll = document.querySelector('.filter-all');
+        var filter = document.querySelector('.f');
+        var reasonWrapper = document.querySelector('.reason-wrapper');
+        var closeReason = document.querySelector('.close-reason');
+        var message = document.querySelector('.messsage-box-wrapper');
+        var closeMessage = document.querySelector('.close-message');
+        const dueForm = document.getElementById('due-form');
+        let dueDateWrapper = document.querySelector('.due-date-wrapper');
+
+
+
+        function formatDate(date) {
+            let year = date.getFullYear();
+            let month = String(date.getMonth() + 1).padStart(2, '0');
+            let day = String(date.getDate()).padStart(2, '0'); 
+            return `${year}/${month}/${day}`;
+        }
+
+        function openSendBox(id){
+            const dueDateWrapper = document.querySelector('.due-date-wrapper');
+        
+            dueForm.elements['id'].value = id;
+
+            dueDateWrapper.style.display = 'flex';
+        }
+
+
+        dueForm.addEventListener('submit', async function(e){
+            e.preventDefault()
+            let due_date = dueForm.duedate.value;
+            let id = dueForm.id.value;
+            let currentDate = new Date();
+            let borrow_date = formatDate(currentDate);
+            let status = 'borrowed';
+            due_date = due_date.replace(/-/g, '/');
+            
+            try {
+                let res = await fetch('/admin/collected', {
+                    method: 'POST',
+                    body: JSON.stringify({due_date, status,id,borrow_date}),
+                    headers: {'Content-Type': 'application/json'}
+                });
+
+                let data = await res.json();
+                console.log(data);
+                if(data.M){
+                    location.reload();
+                }
+
+            } catch (err) {
+                console.log(err);
+            }
+
+        })
+
+        function cancle(){
+            dueDateWrapper.style.display = 'none';
+        }
+
+        closeMessage.addEventListener('click', function(){
+            message.style.display = 'none'
+        })
+
+        function closepopReason(action){
+            action === 'pop' ? reasonWrapper.style.display = 'flex' : reasonWrapper.style.display = 'none'
+        }
+
+
+        filter.addEventListener('click', function(){
+            filterAll.style.display = filterAll.style.display === 'none' ?  'block' : 'none'
+        })
+
+
+        closeUser.addEventListener('click', function(){
+            userDetailsWrapper.style.display = 'none';
+        });
+
+        function displayUser(){
+            userDetailsWrapper.style.display = 'flex';
+        }
+
+        menuBtn.addEventListener('click', function(){
+            if(list.style.display === 'none'){
+                list.style.display = 'block';
+                document.querySelector('.filter').style.zIndex = '-1';
+            }else{
+                list.style.display = 'none';
+                document.querySelector('.filter').style.zIndex = '1';
+            }
+        });
+
+        popAdmin.addEventListener('click', function(){
+            createAdminWrapper.style.display = 'flex';
+            list.style.display = 'none';
+        });
+
+        closes.addEventListener('click', function(){
+            createAdminWrapper.style.display = 'none';
+        });
+
+        closeBookForm.addEventListener('click', function(){
+            bookFormWrapper.style.display = 'none';
+        });
+
+        addBook.addEventListener('click', function(){
+            bookFormWrapper.style.display = 'flex';
+            list.style.display = 'none';
+        });
+
+        
+
+    </script>
+</body>
+</html>

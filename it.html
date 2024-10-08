@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Draw on Mouse Pass Smoothly</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="drawCanvas" width="600" height="400"></canvas>
+
+<script>
+  // Get the canvas and context
+  var canvas = document.getElementById('drawCanvas');
+  var ctx = canvas.getContext('2d');
+
+  var drawing = false;  // Track if the mouse is being pressed
+  var lastX = 0, lastY = 0;  // Store the last mouse position
+
+  // Event Listener for mouse down (start drawing)
+  canvas.addEventListener('mousedown', function(e) {
+    drawing = true;
+    lastX = e.offsetX;  // Set the starting mouse position
+    lastY = e.offsetY;
+    draw(lastX, lastY);  // Draw the initial point
+  });
+
+  // Event Listener for mouse up (stop drawing)
+  canvas.addEventListener('mouseup', function() {
+    drawing = false;
+  });
+
+  // Event Listener for mouse move (draw smoothly by connecting points)
+  canvas.addEventListener('mousemove', function(e) {
+    if (drawing) {
+      var currentX = e.offsetX;
+      var currentY = e.offsetY;
+      draw(currentX, currentY);  // Draw at the current mouse position
+
+      // Update last position to current
+      lastX = currentX;
+      lastY = currentY;
+    }
+  });
+
+  // Function to draw by connecting the last point and the current one
+  function draw(x, y) {
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);  // Move to the last known mouse position
+    ctx.lineTo(x, y);  // Draw a line to the current mouse position
+    ctx.strokeStyle = 'black';  // Set line color
+    ctx.lineWidth = 5;  // Set line width
+    ctx.stroke();  // Actually draw the line
+
+    // Optionally, draw a small circle at the current position to smoothen edges
+    ctx.beginPath();
+    ctx.arc(x, y, 2, 0, Math.PI * 2);  // Draw a small circle at the mouse position
+    ctx.fillStyle = 'black';  // Set fill color
+    ctx.fill();  // Fill the circle
+  }
+</script>
+
+</body>
+</html>
