@@ -29,7 +29,7 @@ router.post('/request', async (req,res) =>{
     let {userRegno,request_date,bookIsbn} = req.body;
 
     try {
-        let check = await BorrowReq.findOne({userRegno});
+        let check = await BorrowReq.findOne({bookIsbn});
 
         if(check){
             if(check.status === 'approved'){
@@ -38,11 +38,10 @@ router.post('/request', async (req,res) =>{
     
                 if(BR){
                     if(BR.status === 'borrowed') res.json({E: 'You borrowed this book and have not returned it yet'});
-                    if(BR.status === 'not borrowed') res.json({E: 'Your earlier request for this request for this book has been approved pls go to the library to collect it.'});
+                    if(BR.status === 'not borrowed') res.json({E: 'Your earlier request for this book has been approved pls go to the library to collect it.'});
                     if(BR.status === 'overdue') res,json({E: 'You borrowed this and it is overdue pls kindly return'})
                 }
-            }
-            if(check.status === 'pending'){
+            }else if(check.status === 'pending'){
                 res.status(200).json({E: 'u have a pending request for this book'})
             }else{
                 let reqcreate = await BorrowReq.create({userRegno,request_date,bookIsbn});

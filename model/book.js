@@ -8,9 +8,9 @@ const bookSchema = new mongoose.Schema({
   published_year: { type: String, required: true },
   total_copies: { type: Number, required: true },
   copies_available: { type: Number, default: 1 },
-  fine: {type: Number},
-  created_at: { type: Date, default: Date.now }
+  fine:{ type: Number, default: 100, required: true},
+  created_at: { type: Date, default: Date.now },
 });
 
 const Book = mongoose.model('Book', bookSchema);
-export default Book
+export default Book;

@@ -98,7 +98,11 @@ router.post('/collected', async (req,res)=> {
         borrow.due_date = due_date;
         borrow.status = status; 
         borrow.borrow_date = borrow_date;
-       await borrow.save();
+        let isbn = borrow.bookIsbn;
+        await borrow.save();
+        let bk = await Book.findOne({isbn});
+        bk.copies_available = bk.total_copies - 1;
+        await bk.save();
        res.status(200).json({M: 'status updated!!'});
     } catch (err) {
         console.log(err);

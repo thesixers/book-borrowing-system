@@ -62,9 +62,11 @@ nav .right .list ul li:hover a{
 @keyframes slideout {
     from{
         width: 0px;
+        opacity: 0;
     }
     to{
         width: 350px;
+        opacity: 1;
     }
 }
 
