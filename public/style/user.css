@@ -356,3 +356,80 @@ nav .right .list ul li:hover a{
   color: green;
   font-weight: 600;
 }
+
+/* sub */
+marquee{
+  font-size: 35px;
+  color: crimson;
+  font-weight: 700;
+  width: 100%;
+}
+.main .welcome{
+   margin: auto;
+   width: 500px;
+}
+
+.current-list{
+  /* background-color: red; */
+
+    .current-title{
+      padding: 10px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 500;
+      color: crimson;
+    }
+
+    .books{
+      height: 400px;
+      position: relative;
+      border: 1px solid crimson;
+      overflow-y: scroll;
+
+      .bk{
+        /* border: 1px solid #000; */
+        padding: 10px;
+        
+        &:hover{
+          box-shadow: 0px 1px 7px 1px #000;
+        }
+      }
+
+      .scrollbar{
+        position: fixed;
+        height: 100%;
+        /* background-color: crimson; */
+        width: 3px;
+        padding: 0px 3px;
+        top: 0;
+        right: 0;
+
+        .scroll{
+          background-color: crimson;
+          width: 100%;
+          height: 30px;
+          border-radius: 20px;
+          margin-top: 1px;
+          animation-name: scroll;
+          animation-duration: 0.2s;
+          animation-timing-function: linear;
+          /* animation-direction: ;
+          animation-fill-mode: ;
+          animation-composition: ;
+          animation-range: ;
+          animation-play-state: ; */
+          animation-timeline: scroll;
+        }
+
+        
+      }
+    }
+}
+@keyframes scroll {
+  from{
+    margin-top: 1px;
+  }
+  to{
+    margin-top: 368px;
+  }
+}

@@ -44,6 +44,11 @@ router.post('/login', async (req,res) =>{
         res.status(500).json({E});
         console.log(err);
     }
+});
+
+router.get('/logout', (req,res)=> {
+    res.cookie('bookUser', '', {maxAge: 1, httpOnly: true});
+    res.redirect('/userAuth/login');
 })
 
 export default router;

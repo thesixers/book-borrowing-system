@@ -9,6 +9,37 @@
 </head>
 <body>
     <%- include('./partials/nav.ejs') %>
+    <% let {user, borrowReq, borrowlist, books} = all %>
+    <% let currentlyBorrowed = borrowlist.filter(e => e.status === 'borrowed' || e.status === 'overdue') %>
+
+    <section class="main">
+        <div class="welcome">
+            <marquee behavior="" direction="">
+                WELCOME <%= user.name.split(' ')[0] %>
+            </marquee>
+            <div class="current-list">
+                <div class="current-title">List of currently borrowed Books</div>
+                <div class="books">
+                    <% currentlyBorrowed.forEach(e => { %>
+                        <div class="bk">
+                            <div class="bk-title"><span class="title">Name:</span> <%= e.title %></div>
+                            <div class="bk-title"><span class="title">ISBN:</span> <%= e.bookIsbn %></div>
+                            <div class="bk-title"><span class="title">Due Date:</span> <%= e.due_date %></div>
+                            <div class="bk-title"><span class="title">Status:</span>
+                                <% if(e.status === 'borrowed'){ %>
+                                    <%= e.status %>
+                                <% }else{%>  
+                                    <%= e.overdue_days %><%= e.status %>
+                                <% } %>      
+                            </div>
+                        </div>
+                    <% }); %>
+                    <div class="scrollbar"><div class="scroll"></div></div>
+                </div>
+            </div>
+        </div>
+        
+    </section>
 
 
 

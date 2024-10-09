@@ -30,17 +30,26 @@ router.post('/request', async (req,res) =>{
 
     try {
         let check = await BorrowReq.findOne({userRegno});
-        console.log(typeof check); 
+
         if(check){
+            if(check.status === 'approved'){
+                let request_id = check.id
+                const BR = await BorrowingRec.findOne({request_id});
+    
+                if(BR){
+                    if(BR.status === 'borrowed') res.json({E: 'You borrowed this book and have not returned it yet'});
+                    if(BR.status === 'not borrowed') res.json({E: 'Your earlier request for this request for this book has been approved pls go to the library to collect it.'});
+                    if(BR.status === 'overdue') res,json({E: 'You borrowed this and it is overdue pls kindly return'})
+                }
+            }
             if(check.status === 'pending'){
-                // console.log('pending');
                 res.status(200).json({E: 'u have a pending request for this book'})
-                // console.log(true);
             }else{
                 let reqcreate = await BorrowReq.create({userRegno,request_date,bookIsbn});
                 if(reqcreate) res.status(200).json({M: 'done'});
             }  
-        }else{
+        }
+        else{
             let reqcreate = await BorrowReq.create({userRegno,request_date,bookIsbn});
             if(reqcreate) res.status(200).json({M: 'done'});
         }

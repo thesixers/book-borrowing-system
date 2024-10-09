@@ -25,7 +25,10 @@ app.use(morgan('dev'));
 
 const port = PORT || 2;
 
-cron.schedule('0 0 * * *', checkAndUpdateOverdue()); 
+cron.schedule('0 0 * * *', () => {
+    console.log('Running overdue check...');
+    checkAndUpdateOverdue();
+  }); 
 
 app.get('/', (req,res) =>{
     res.redirect('/user');
